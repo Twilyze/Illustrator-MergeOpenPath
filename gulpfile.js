@@ -115,17 +115,11 @@ gulp.task('copy', () => {
     .pipe($.rename({extname: '.txt'}))
     .pipe(gulp.dest(DEST_PATH));
 });
-gulp.task('zip', () => {
-  return gulp.src(DEST_PATH + '/*.*')
-    .pipe($.zip(OUTPUT_NAME + '.zip'))
-    .pipe(gulp.dest(DEST_PATH));
-});
 
 
 gulp.task('build', gulp.series(
   'clean',
-  gulp.parallel('jsxmin', 'copy'),
-  'zip'
+  gulp.parallel('jsxmin', 'copy')
 ));
 
 gulp.task('watch', gulp.series('jsx:dev', () => {
