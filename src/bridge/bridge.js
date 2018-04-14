@@ -67,7 +67,7 @@
   function extractPaths(pageItem) {
     switch (pageItem.typename) {
       case 'PathItem':
-        if (!pageItem.closed) {
+        if (!pageItem.closed && !pageItem.hidden && !pageItem.locked) {
           pathObj[pathCount] = pageItem;
           pathObj[pathCount].isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
           pathObj[pathCount].isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
