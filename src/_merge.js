@@ -60,7 +60,6 @@ function mergeAnchor(objA, objB) {
   if (skipPathArr[iA] || skipPathArr[iB])
     return false;
 
-  // var joinFlg = false;
   var pathA = pathObj[iA];
   var pathB = pathObj[iB];
 

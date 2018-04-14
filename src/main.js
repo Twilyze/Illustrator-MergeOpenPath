@@ -215,13 +215,11 @@ function main() {
       //----------------------
       // 他のパスとの連結処理
       if (settings.rbMerge !== RB_MERGE.CLOSE) {
-        updateWindow('4分木初期化中…');
+        updateWindow('4分木登録中…');
         var level = 0;
         if (pathCount > 20)
           level = floor(pathCount / 800) + 3;  // 適当
-        $.writeln('level:' + level);
         LinearQuadtreePartition.init(activeBounds, level, settings.connectDistance);
-        updateWindow('4分木登録中…');
         LinearQuadtreePartition.regist(pathObj);
         updateWindow('他のパスとの連結中…');
         LinearQuadtreePartition.start();

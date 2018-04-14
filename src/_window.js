@@ -15,7 +15,7 @@ function addControl(settings, window, key) {
   switch (type) {
     case 'panel':
       var panel = window.add('panel', undefined, set.title);
-      panel.alignChildren = ['left', 'top'];
+      panel.alignChildren = 'left';
       panel.margins = [MARGIN * 1.5, MARGIN * 1.5, MARGIN, MARGIN];
       panel.spacing = MARGIN * 0.75;
       iter2addControl(set.items, panel);
@@ -38,8 +38,7 @@ function addControl(settings, window, key) {
       rbPanel.margins = [MARGIN * 1.5, MARGIN * 1.5, MARGIN, MARGIN];
       rbPanel.spacing = MARGIN * 0.5;
       rbPanel.alignment = 'fill';
-      rbPanel.orientation = 'column';
-      rbPanel.alignChildren = ['left', 'top'];
+      rbPanel.alignChildren = 'left';
       for (var i = 0, len = set.items.length; i < len; i++)
         controls[key + '_' + i] = rbPanel.add(type, undefined, set.items[i]);
       key = key + '_0';
@@ -79,8 +78,8 @@ function createGUI() {
     columnGroup.margins = [MARGIN * 1.5, MARGIN * 1.25, MARGIN * 1.5, MARGIN * 1.5];
     columnGroup.spacing = MARGIN;
     columnGroup.orientation = 'column';
-    columnGroup.alignment = ['left', 'top'];
-    columnGroup.alignChildren = ['fill', 'top'];
+    columnGroup.alignment = 'left';
+    columnGroup.alignChildren = 'fill';
 
     // 設定オブジェクトからUI追加
     iter2addControl(defaultSettings, columnGroup);
