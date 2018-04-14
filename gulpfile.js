@@ -76,10 +76,11 @@ function compileJSX(dir, isDev, isMinify) {
     .pipe($.eslint({useEslintrc: true, configFile: ESLINT_RC}))
     .pipe($.eslint.format('stylish'))
     .pipe($.eslint.failAfterError())
+    .pipe($.if(!isDev && !isMinify, $.replace(/ *(\/\/ )?\$\.write(ln)?.+\n/g, '')))
     .pipe($.if(isMinify, minify({
       compress : {
-        toplevel   : true,
-        pure_funcs : isDev ? [] : ['$.writeln']
+        booleans   : false,
+        pure_funcs : isDev ? [] : ['$.writeln', '$.write']
       },
       mangle : {
         eval     : true,
@@ -120,7 +121,7 @@ gulp.task('copy', () => {
 
 gulp.task('build', gulp.series(
   'clean',
-  gulp.parallel('jsxmin', 'copy')
+  gulp.parallel('jsx', 'jsxmin', 'copy')
 ));
 
 gulp.task('watch', gulp.series('jsx:dev', () => {
