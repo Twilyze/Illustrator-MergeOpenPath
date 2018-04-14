@@ -4,12 +4,14 @@
     var tmp2 = pos1[1] - pos2[1];
     return tmp1 * tmp1 + tmp2 * tmp2 <= connectDistanceSquare;
   }
+
   // ２点の中間位置
   function getMiddlePos(pos1, pos2) {
-    return ([(pos1[0] + pos2[0]) * 0.5, (pos1[1] + pos2[1]) * 0.5]);
+    return [(pos1[0] + pos2[0]) * 0.5, (pos1[1] + pos2[1]) * 0.5];
   }
+
   // ２点の位置から角度を取得
-  function getRadian(pos1, pos2) {
+  function getAngle(pos1, pos2) {
     return atan2(pos2[1] - pos1[1], pos2[0] - pos1[0]);
   }
 
@@ -28,9 +30,10 @@
 
   // 2つの配列が同じ内容か比較する(簡易)
   function equalsArray(a, b) {   // eslint-disable-line no-unused-vars
-    if (a.length !== b.length)
+    var lenA = a.length;
+    if (lenA !== b.length)
       return false;
-    for (var i = 0, len = a.length; i < len; i++)
+    for (var i = 0; i < lenA; i++)
       if (a[i] !== b[i])
         return false;
     return true;

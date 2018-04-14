@@ -1,4 +1,6 @@
 var MARGIN = 8;
+var EDITTEXT_SIZE = [0, 0, 44, 20];
+var controls = {};
 var groups = {};
 
 // 設定用UI追加
@@ -46,7 +48,7 @@ function addControl(settings, window, key) {
     case 'edittext':
       var edGroup = window.add('group');
       edGroup.add('statictext', undefined, set.title);
-      controls[key] = edGroup.add(type, [0, 0, 44, 21], set.value);
+      controls[key] = edGroup.add(type, EDITTEXT_SIZE, set.value);
       break;
     case 'slider':
       var slPanel = window.add('panel', undefined, set.title);
@@ -57,7 +59,7 @@ function addControl(settings, window, key) {
       slider.onChanging = function() {
         controls[key].text = slider.value * 0.1;
       };
-      controls[key] = slGroup.add('edittext', [0, 0, 44, 21], set.value);
+      controls[key] = slGroup.add('edittext', EDITTEXT_SIZE, set.value);
       break;
     // no default
   }
@@ -95,5 +97,24 @@ function createGUI() {
     alert(e, 'Error', true);
     return false;
   }
+
+  win.onClose = function() {
+    function clearObj(obj) {
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          obj[key] = null;
+          delete obj[key];
+        }
+      }
+      obj = null;
+    }
+    win = null;
+    clearObj(settings);
+    clearObj(controls);
+    clearObj(groups);
+    $.gc();
+    $.gc();
+    $.writeln($.summary());
+  };
   return win;
 }

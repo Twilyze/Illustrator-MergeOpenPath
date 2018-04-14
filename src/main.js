@@ -69,7 +69,7 @@ function main() {
         $.writeln(body);
         var result = eval(body);
         if (!result) return;
-        var resultTime = Math.round((new Date().getTime() - startTime) * 0.01) * 0.1;
+        var resultTime = Math.round((new Date().getTime() - startTime) * 0.1) * 0.01;
         var message = '[' + (runCount + 1) + '] ' +
           result.joinCount +
           ' (' + result.closePathCount + ')' +
@@ -85,6 +85,8 @@ function main() {
       }
       finally {
         win.enabled = true;
+        $.gc();
+        $.gc();
         $.writeln('--- End ---');
       }
     });
@@ -95,4 +97,5 @@ function main() {
 }
 
 $.writeln('\n---- Start script ----');
+$.writeln($.summary());
 main();
