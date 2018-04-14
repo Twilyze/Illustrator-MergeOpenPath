@@ -1,6 +1,6 @@
 {
   "name": "MergeOpenPath",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "Twilyze",
   "license": "MIT",
   "url": "https://github.com/twilyze/Illustrator-MergeOpenPath",
@@ -15,6 +15,7 @@
     "gulp-concat": "2.6.1",
     "gulp-cr-lf-replace": "0.0.4",
     "gulp-eslint": "4.0.2",
+    "gulp-footer": "2.0.1",
     "gulp-header": "2.0.5",
     "gulp-if": "2.0.2",
     "gulp-load-plugins": "1.5.0",
