@@ -155,7 +155,7 @@
     //----------------------
     // ウィンドウ作成
     winProgress = new Window('palette', '処理中は最小化しないでください', undefined, {closeButton: false});
-    winProgress.staticTextProgressInfo = winProgress.add('statictext', [0, 0, 300, 16], 'パス取得中…');
+    winProgress.staticTextProgressInfo = winProgress.add('statictext', [0, 0, 240, 16], 'パス取得中…');
     winProgress.spacing = 8;
     winProgress.orientation = 'column';
     winProgress.alignChildren = ['left', 'top'];
