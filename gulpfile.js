@@ -13,12 +13,8 @@ const TARGET = 'illustrator';
 const CREATED_YEAR = '2018';
 const SOURCE_PATH = [
   'src/settings.js',
-  'src/bridge/header.js',
-  'src/bridge/_*.js',
-  'src/bridge/bridge.js',
-  'src/bridge/footer.js',
   'src/_*.js',
-  'src/main.js'
+  'src/main.js',
 ];
 const OUTPUT_NAME = pkg.name;
 const COPY_FILE = ['LICENSE', 'README.md'];
@@ -51,16 +47,17 @@ const banner = [
   '<%= pkg.licenseURL %>',
   '*/',
   `#target ${TARGET};`,
-  `#targetengine ${pkg.name};`,
   ''
 ].join('\n');
 
 const embedCodeHeader = [
+  '(function() {',
   `var SCRIPT_TITLE = '${pkg.name}';`,
-  `var SCRIPT_TARGET = '${TARGET}';`,
   `var SCRIPT_VERSION = '${pkg.version}';`,
-  '\n'
+  ''
 ].join('\n');
+
+const embedCodeFooter = '}());\n';
 
 
 //----------------------
@@ -73,6 +70,7 @@ function compileJSX(dir, isDev, isMinify) {
     }))
     .pipe($.concat(OUTPUT_NAME))
     .pipe($.header(embedCodeHeader))
+    .pipe($.footer(embedCodeFooter))
     .pipe($.eslint({useEslintrc: true, configFile: ESLINT_RC}))
     .pipe($.eslint.format('stylish'))
     .pipe($.eslint.failAfterError())

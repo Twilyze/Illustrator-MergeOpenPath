@@ -15,7 +15,7 @@ function addControl(settings, window, key) {
   switch (type) {
     case 'panel':
       var panel = window.add('panel', undefined, set.title);
-      panel.alignChildren = ['left', 'top'];
+      panel.alignChildren = 'left';
       panel.margins = [MARGIN * 1.5, MARGIN * 1.5, MARGIN, MARGIN];
       panel.spacing = MARGIN * 0.75;
       iter2addControl(set.items, panel);
@@ -38,8 +38,7 @@ function addControl(settings, window, key) {
       rbPanel.margins = [MARGIN * 1.5, MARGIN * 1.5, MARGIN, MARGIN];
       rbPanel.spacing = MARGIN * 0.5;
       rbPanel.alignment = 'fill';
-      rbPanel.orientation = 'column';
-      rbPanel.alignChildren = ['left', 'top'];
+      rbPanel.alignChildren = 'left';
       for (var i = 0, len = set.items.length; i < len; i++)
         controls[key + '_' + i] = rbPanel.add(type, undefined, set.items[i]);
       key = key + '_0';
@@ -72,49 +71,29 @@ function createGUI() {
   $.writeln('--- createGUI ---');
   var win;
   try {
-    win = new Window('palette', SCRIPT_TITLE + ' - ' + SCRIPT_VERSION);
+    win = new Window('dialog', SCRIPT_TITLE + ' - ' + SCRIPT_VERSION);
     win.margins = 0;
 
     var columnGroup = win.add('group');
     columnGroup.margins = [MARGIN * 1.5, MARGIN * 1.25, MARGIN * 1.5, MARGIN * 1.5];
     columnGroup.spacing = MARGIN;
     columnGroup.orientation = 'column';
-    columnGroup.alignment = ['left', 'top'];
-    columnGroup.alignChildren = ['fill', 'top'];
+    columnGroup.alignment = 'left';
+    columnGroup.alignChildren = 'fill';
 
     // 設定オブジェクトからUI追加
-    iter2addControl(settings, columnGroup);
+    iter2addControl(defaultSettings, columnGroup);
 
     // 実行ボタン
     win.buttonRun = columnGroup.add('button', [0, 0, 74, 32], '実行');
 
-    // リザルト
-    win.listboxResult = columnGroup.add('listbox');
-    win.listboxResult.minimumSize = [200, 42];
-    win.listboxResult.helpTip = '[] 連結数 (クローズ数) / 選択オープンパス数  処理時間';
+    // 処理経過
+    win.staticTextProgressInfo = columnGroup.add('statictext', [0, 0, 200, 16]);
   }
   catch (e) {
     alert(e, 'Error', true);
     return false;
   }
 
-  win.onClose = function() {
-    function clearObj(obj) {
-      for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          obj[key] = null;
-          delete obj[key];
-        }
-      }
-      obj = null;
-    }
-    win = null;
-    clearObj(settings);
-    clearObj(controls);
-    clearObj(groups);
-    $.gc();
-    $.gc();
-    $.writeln($.summary());
-  };
   return win;
 }
