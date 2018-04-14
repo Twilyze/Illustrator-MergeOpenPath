@@ -12,6 +12,7 @@ const minify = composer(uglifyes, console);
 const TARGET = 'illustrator';
 const CREATED_YEAR = '2018';
 const SOURCE_PATH = [
+  'src/settings.js',
   'src/bridge/header.js',
   'src/bridge/_*.js',
   'src/bridge/bridge.js',
