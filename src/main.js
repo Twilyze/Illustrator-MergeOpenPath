@@ -239,14 +239,32 @@ function main() {
       //----------------------
       // 結果を表示
       updateWindow('完了');
-      var resultTime = Math.round((new Date().getTime() - startTime) * 0.1) * 0.01;
-      var message =
-        '連結数:' + joinCount +
-        '  クローズ数:' + closePathCount +
-        '\n選択オープンパス数:' + pathCount +
-        '  処理時間:' + resultTime + 's';
-      $.writeln(message);
-      alert(message, 'Result');
+      var resultTime = new Date().getTime() - startTime;
+      var messageLeft = [
+        '連結数',
+        'クローズ数',
+        '対象オープンパス数',
+        '処理時間(ms)',
+      ].join('\n');
+      var messageRight = [
+        joinCount,
+        closePathCount,
+        pathCount,
+        resultTime,
+      ].join('\n');
+
+      var winResult = new Window('dialog', 'Result');
+      var messageGroup = winResult.add('group');
+      messageGroup.spacing = 4;
+      messageGroup.add('statictext', undefined, messageLeft, {multiline: true});
+      messageGroup.add('statictext', undefined, ':\n:\n:\n:', {multiline: true});
+      messageGroup.add('statictext', undefined, messageRight, {multiline: true});
+      winResult.buttonOK = winResult.add('button', [0, 0, 84, 25], 'OK');
+      winResult.buttonOK.onClick = function() {
+        winResult.close();
+      };
+      winResult.center(win);
+      winResult.show();
     }
     catch (e) {
       alert(e, 'Error', true);
