@@ -1,12 +1,15 @@
   $.writeln('-- BridgeTalk() --');
+  $.writeln('1' + $.summary());
   //----------------------
   // BridgeTalk()
   var winProgress;
   var pathObj = [];
   var pathCount = 0;
+  var joinCount = 0;
+  var closePathCount = 0;
+  var activeBounds;
   var result = {};
   var skipPathArr = [];
-  var skipPathCount = 0;
   var edgeAnchorCount = 0;
   var settings;
   var connectDistanceSquare;
@@ -15,7 +18,6 @@
   var closePathCondition;
   var unequalProperty;
   var isReverseAngle;
-  var isReverseAngleFlg;
   var gapAllowRad;
   var RB_MERGE = {
     OTHER : 0,  // 他のパスとの連結
@@ -31,8 +33,31 @@
   var POSITIVE = PolarityValues.POSITIVE;
   var NEGATIVE = PolarityValues.NEGATIVE;
   var atan2 = Math.atan2;
+  var floor = Math.floor;
+  var pow = Math.pow;
   var abs = Math.abs;
   var PI = Math.PI;
+
+  function updateWindow(str) {
+    winProgress.staticTextProgressInfo.text = str;
+    winProgress.update();
+  }
+  function clearObj(obj) {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        obj[key] = null;
+        delete obj[key];
+      }
+    }
+    obj = null;
+  }
+  function clearArr(arr) {
+    for (var i = 0, len = arr.length; i < len; i++) {
+      arr[i] = null;
+      delete arr[i];
+    }
+    arr = null;
+  }
 
   // オープンパスを探して配列に保存
   function iter2extractPaths(items) {
@@ -42,12 +67,20 @@
   function extractPaths(pageItem) {
     switch (pageItem.typename) {
       case 'PathItem':
-        if (!pageItem.closed) {
+        if (!pageItem.closed && !pageItem.hidden && !pageItem.locked) {
           pathObj[pathCount] = pageItem;
           pathObj[pathCount].isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
           pathObj[pathCount].isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
           if (pathObj[pathCount].isAnchorStart) edgeAnchorCount++;
           if (pathObj[pathCount].isAnchorEnd) edgeAnchorCount++;
+
+          // [left, top, right, bottom] スクリプトでは下方向がマイナス
+          var bounds = pageItem.geometricBounds;
+          if (activeBounds[0] > bounds[0]) activeBounds[0] = bounds[0];
+          if (activeBounds[1] < bounds[1]) activeBounds[1] = bounds[1];
+          if (activeBounds[2] < bounds[2]) activeBounds[2] = bounds[2];
+          if (activeBounds[3] > bounds[3]) activeBounds[3] = bounds[3];
+
           skipPathArr[pathCount] = false;
           pathCount++;
         }
@@ -66,10 +99,6 @@
   }
 
   try {
-    var mergeFunc;
-    var joinCount = 0;
-    var closePathCount = 0;
-
     //----------------------
     // 設定変換
     settings = eval(args);
@@ -82,27 +111,6 @@
     // 中間位置で連結する時は4つ、間に線を追加する時はアンカーポイントが3つ以上なければ連結しない
     isConnectMiddle = settings.rbConnect === RB_CONNECT.MIDDLE;
     closePathCondition = isConnectMiddle ? 4 : 3;
-
-    // 連結対象
-    mergeFunc = (function() {
-      switch (settings.rbMerge) {
-        case RB_MERGE.OTHER:
-          return function(index) {
-            joinCount += mergeAnchor(index);
-          };
-        case RB_MERGE.CLOSE:
-          return function(index) {
-            closePathCount += mightClosePath(pathObj[index]);
-          };
-        case RB_MERGE.BOTH:
-          return function(index) {
-            joinCount += mergeAnchor(index);
-            closePathCount += mightClosePath(pathObj[index]);
-          };
-        default:
-          throw new RangeError('[連結対象]');
-      }
-    }());
 
     // 指定したプロパティの比較
     unequalProperty = (function() {
@@ -120,39 +128,34 @@
       return eval(func);
     }());
 
-    // 角度比較をするかどうか
-    isReverseAngleFlg = (settings.horizontal || settings.vertical);
     // 角度計算許容量
     gapAllowRad = conv2radian(settings.gapAllowDeg + ANGLE_ABSORPTION);
     // 角度比較をどの軸で行うか
     isReverseAngle = (function() {
-      // 圧縮後の三項演算子の処理順問題を回避するためにswitchを使う(雑)
-      var type = 0;
-      if (settings.vertical && settings.horizontal)
-        type = 2;
-      else if (settings.horizontal)
-        type = 1;
-      switch (type) {
-        case 2:
+      var a = settings.vertical ? 0x01 : 0;
+      var b = settings.horizontal ? 0x10 : 0;
+      switch (a | b) {
+        case 0x11:
           return function(pos1, pos2, pos3, pos4) {
-            return isReverseAngleHorizontalVertical(getRadian(pos1, pos2), getRadian(pos3, pos4));
+            return isReverseAngleHorizontalVertical(getAngle(pos1, pos2), getAngle(pos3, pos4));
           };
-        case 1:
+        case 0x10:
           return function(pos1, pos2, pos3, pos4) {
-            return isReverseAngleHorizontal(getRadian(pos1, pos2), getRadian(pos3, pos4));
+            return isReverseAngleHorizontal(getAngle(pos1, pos2), getAngle(pos3, pos4));
+          };
+        case 0x01:
+          return function(pos1, pos2, pos3, pos4) {
+            return isReverseAngleVertical(getAngle(pos1, pos2), getAngle(pos3, pos4));
           };
         default:
-          return function(pos1, pos2, pos3, pos4) {
-            return isReverseAngleVertical(getRadian(pos1, pos2), getRadian(pos3, pos4));
-          };
+          return false;
       }
     }());
 
     //----------------------
     // ウィンドウ作成
     winProgress = new Window('palette', '処理中は最小化しないでください', undefined, {closeButton: false});
-    var progressBar = winProgress.add('progressbar', [0, 0, 300, 16], 0, 100);
-    var staticTextProgressInfo = winProgress.add('statictext', [0, 0, 300, 16], 'パス取得中…');
+    winProgress.staticTextProgressInfo = winProgress.add('statictext', [0, 0, 300, 16], 'パス取得中…');
     winProgress.spacing = 8;
     winProgress.orientation = 'column';
     winProgress.alignChildren = ['left', 'top'];
@@ -161,7 +164,10 @@
 
     //----------------------
     // 選択オブジェクトからオープンパスを取得
-    iter2extractPaths(app.activeDocument.selection);
+    var activeSelection = app.activeDocument.selection;
+    activeBounds = activeSelection[0].geometricBounds;
+    iter2extractPaths(activeSelection);
+    $.writeln('2' + $.summary());
 
     if (edgeAnchorCount < 2) {
       alert('パスの端にあるアンカーポイントを２つ以上選択してください');
@@ -175,27 +181,35 @@
       }
     }
     $.writeln('path:' + pathCount + ' edgeAnchor:' + edgeAnchorCount);
-    progressBar.maxvalue = pathCount;
 
     //----------------------
-    // 連結処理ループ
-    for (var j = 0; j < pathCount; j++) {
-      if ((j & 63) === 0)  // j % 64 === 0
-        winProgress.update();
-      progressBar.value = j + skipPathCount;
-      staticTextProgressInfo.text = j + '/' + pathCount +
-        ' (join:' + joinCount +
-        ' close:' + closePathCount +
-        ')';
-
-      if (skipPathArr[j])
-        continue;
-      mergeFunc(j);
+    // 他のパスとの連結処理
+    if (settings.rbMerge !== RB_MERGE.CLOSE) {
+      updateWindow('4分木初期化中…');
+      var level = 0;
+      if (pathCount > 20)
+        level = Math.floor(pathCount / 800) + 3;  // 適当
+      LinearQuadtreePartition.init(activeBounds, level, settings.connectDistance);
+      updateWindow('4分木登録中…');
+      LinearQuadtreePartition.regist(pathObj);
+      updateWindow('他のパスとの連結中…');
+      LinearQuadtreePartition.start();
     }
-    $.writeln(staticTextProgressInfo.text);
+
+    //----------------------
+    // パスのクローズ処理
+    if (settings.rbMerge !== RB_MERGE.OTHER) {
+      updateWindow('同じパスの両端を連結中…');
+      for (var i = 0; i < pathCount; i++) {
+        if (skipPathArr[i])
+          continue;
+        mightClosePath(pathObj[i]);
+      }
+    }
 
     //----------------------
     // 結果をコールバックへ返す
+    updateWindow('終了処理中…');
     result.pathCount = pathCount;
     result.joinCount = joinCount;
     result.closePathCount = closePathCount;
@@ -208,4 +222,13 @@
   }
   finally {
     winProgress.close();
+    winProgress = null;
+    clearArr(skipPathArr);
+    clearObj(settings);
+    clearObj(activeBounds);
+    clearObj(LinearQuadtreePartition);
+    clearArr(pathObj);
+    $.gc();
+    $.gc();
+    $.writeln('3' + $.summary());
   }
