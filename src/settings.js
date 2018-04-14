@@ -1,4 +1,4 @@
-var settings = {
+var defaultSettings = {
   connectDistance : {type: 'slider', value: '0.1', title: 'これ以下の距離なら連結する', helpTip: '単位：ピクセル'},
   rbMerge         : {type: 'radiobutton', title: '連結対象', items: ['他のパスとの連結', '同じパスの両端を連結', '両方']},
   rbConnect       : {type: 'radiobutton', title: '連結方法', items: ['2点を中間位置に移動', '2点を繋ぐ線を追加']},

@@ -72,7 +72,7 @@ function createGUI() {
   $.writeln('--- createGUI ---');
   var win;
   try {
-    win = new Window('palette', SCRIPT_TITLE + ' - ' + SCRIPT_VERSION);
+    win = new Window('dialog', SCRIPT_TITLE + ' - ' + SCRIPT_VERSION);
     win.margins = 0;
 
     var columnGroup = win.add('group');
@@ -83,38 +83,18 @@ function createGUI() {
     columnGroup.alignChildren = ['fill', 'top'];
 
     // 設定オブジェクトからUI追加
-    iter2addControl(settings, columnGroup);
+    iter2addControl(defaultSettings, columnGroup);
 
     // 実行ボタン
     win.buttonRun = columnGroup.add('button', [0, 0, 74, 32], '実行');
 
-    // リザルト
-    win.listboxResult = columnGroup.add('listbox');
-    win.listboxResult.minimumSize = [200, 42];
-    win.listboxResult.helpTip = '[] 連結数 (クローズ数) / 選択オープンパス数  処理時間';
+    // 処理経過
+    win.staticTextProgressInfo = columnGroup.add('statictext', [0, 0, 200, 16]);
   }
   catch (e) {
     alert(e, 'Error', true);
     return false;
   }
 
-  win.onClose = function() {
-    function clearObj(obj) {
-      for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          obj[key] = null;
-          delete obj[key];
-        }
-      }
-      obj = null;
-    }
-    win = null;
-    clearObj(settings);
-    clearObj(controls);
-    clearObj(groups);
-    $.gc();
-    $.gc();
-    $.writeln($.summary());
-  };
   return win;
 }
