@@ -255,11 +255,11 @@ function main() {
 
       var winResult = new Window('dialog', 'Result');
       var messageGroup = winResult.add('group');
-      messageGroup.spacing = 4;
+      messageGroup.spacing = 6;
       messageGroup.add('statictext', undefined, messageLeft, {multiline: true});
       messageGroup.add('statictext', undefined, ':\n:\n:\n:', {multiline: true});
       messageGroup.add('statictext', undefined, messageRight, {multiline: true});
-      winResult.buttonOK = winResult.add('button', [0, 0, 84, 25], 'OK');
+      winResult.buttonOK = winResult.add('button', [0, 0, 142, 28], 'OK');
       winResult.buttonOK.onClick = function() {
         winResult.close();
       };
