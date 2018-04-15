@@ -104,22 +104,24 @@ function main() {
 
       //----------------------
       // 選択オブジェクトからオープンパスを取得
-      updateWindow('パス取得中…');
-      activeBounds = activeSelection[0].geometricBounds;
-      iter2extractPaths(activeSelection);
+      if (pathObj.length === 0) {
+        updateWindow('パス取得中…');
+        activeBounds = activeSelection[0].geometricBounds;
+        iter2extractPaths(activeSelection);
 
-      if (edgeAnchorCount < 2) {
-        alert('パスの端にあるアンカーポイントを２つ以上選択してください');
-        return;
-      }
-      // 他のパスと連結する時は２つ以上パスを選択
-      if (settings.rbMerge === RB_MERGE.OTHER) {
-        if (pathCount < 2) {
-          alert('パスを２つ以上選択してください');
+        if (edgeAnchorCount < 2) {
+          alert('パスの端にあるアンカーポイントを２つ以上選択してください');
           return;
         }
+        // 他のパスと連結する時は２つ以上パスを選択
+        if (settings.rbMerge === RB_MERGE.OTHER) {
+          if (pathCount < 2) {
+            alert('パスを２つ以上選択してください');
+            return;
+          }
+        }
+        $.writeln('path:' + pathCount + ' edgeAnchor:' + edgeAnchorCount);
       }
-      $.writeln('path:' + pathCount + ' edgeAnchor:' + edgeAnchorCount);
 
 
       //----------------------
@@ -270,8 +272,12 @@ function main() {
       alert(e, 'Error', true);
     }
     finally {
-      win.close();
-      $.writeln('---- End script ----');
+      if (joinCount !== 0 || closePathCount !== 0) {
+        win.close();
+        $.writeln('---- End script ----');
+      }
+      else
+        updateWindow('連結できませんでした');
     }
   };
 
