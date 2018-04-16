@@ -49,6 +49,7 @@ function main() {
       win.staticTextProgressInfo.text = str;
       win.update();
     }
+
     // オープンパスを探して配列に保存
     function iter2extractPaths(items) {
       for (var i = 0, len = items.length; i < len; i++)
@@ -101,6 +102,7 @@ function main() {
         MIDDLE : 0,  // 2点を中間位置に移動
         ADD    : 1,  // 2点を繋ぐ線を追加
       };
+      win.enabled = false;
 
       //----------------------
       // 選択オブジェクトからオープンパスを取得
@@ -276,8 +278,10 @@ function main() {
         win.close();
         $.writeln('---- End script ----');
       }
-      else
+      else {
         updateWindow('連結できませんでした');
+        win.enabled = true;
+      }
     }
   };
 
