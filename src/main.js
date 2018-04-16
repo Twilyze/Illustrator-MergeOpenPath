@@ -42,6 +42,7 @@ function main() {
   }
   catch (e) {
     alert(e, 'Error', true);
+    return;
   }
 
   win.buttonRun.onClick = function() {
