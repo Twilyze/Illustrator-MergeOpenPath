@@ -21,7 +21,7 @@ MergeOpenPath
 連結したいパスを選択してからスクリプトを起動し実行します。
 
 ### 詳しい説明
-[はてなブログ](https://twilyze.hatenablog.jp/entry/merge-open-path-jsx)
+[はてなブログ](https://twilyze.hatenablog.jp/entry/merge-open-path-jsx#設定項目)
 
 
 ## 注意

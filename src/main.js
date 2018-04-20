@@ -42,6 +42,7 @@ function main() {
   }
   catch (e) {
     alert(e, 'Error', true);
+    return;
   }
 
   win.buttonRun.onClick = function() {
@@ -49,6 +50,7 @@ function main() {
       win.staticTextProgressInfo.text = str;
       win.update();
     }
+
     // オープンパスを探して配列に保存
     function iter2extractPaths(items) {
       for (var i = 0, len = items.length; i < len; i++)
@@ -101,25 +103,28 @@ function main() {
         MIDDLE : 0,  // 2点を中間位置に移動
         ADD    : 1,  // 2点を繋ぐ線を追加
       };
+      win.enabled = false;
 
       //----------------------
       // 選択オブジェクトからオープンパスを取得
-      updateWindow('パス取得中…');
-      activeBounds = activeSelection[0].geometricBounds;
-      iter2extractPaths(activeSelection);
+      if (pathObj.length === 0) {
+        updateWindow('パス取得中…');
+        activeBounds = activeSelection[0].geometricBounds;
+        iter2extractPaths(activeSelection);
 
-      if (edgeAnchorCount < 2) {
-        alert('パスの端にあるアンカーポイントを２つ以上選択してください');
-        return;
-      }
-      // 他のパスと連結する時は２つ以上パスを選択
-      if (settings.rbMerge === RB_MERGE.OTHER) {
-        if (pathCount < 2) {
-          alert('パスを２つ以上選択してください');
+        if (edgeAnchorCount < 2) {
+          alert('パスの端にあるアンカーポイントを２つ以上選択してください');
           return;
         }
+        // 他のパスと連結する時は２つ以上パスを選択
+        if (settings.rbMerge === RB_MERGE.OTHER) {
+          if (pathCount < 2) {
+            alert('パスを２つ以上選択してください');
+            return;
+          }
+        }
+        $.writeln('path:' + pathCount + ' edgeAnchor:' + edgeAnchorCount);
       }
-      $.writeln('path:' + pathCount + ' edgeAnchor:' + edgeAnchorCount);
 
 
       //----------------------
@@ -255,11 +260,11 @@ function main() {
 
       var winResult = new Window('dialog', 'Result');
       var messageGroup = winResult.add('group');
-      messageGroup.spacing = 4;
+      messageGroup.spacing = 6;
       messageGroup.add('statictext', undefined, messageLeft, {multiline: true});
       messageGroup.add('statictext', undefined, ':\n:\n:\n:', {multiline: true});
       messageGroup.add('statictext', undefined, messageRight, {multiline: true});
-      winResult.buttonOK = winResult.add('button', [0, 0, 84, 25], 'OK');
+      winResult.buttonOK = winResult.add('button', [0, 0, 142, 28], 'OK');
       winResult.buttonOK.onClick = function() {
         winResult.close();
       };
@@ -270,8 +275,14 @@ function main() {
       alert(e, 'Error', true);
     }
     finally {
-      win.close();
-      $.writeln('---- End script ----');
+      if (joinCount !== 0 || closePathCount !== 0) {
+        win.close();
+        $.writeln('---- End script ----');
+      }
+      else {
+        updateWindow('連結できませんでした');
+        win.enabled = true;
+      }
     }
   };
 
