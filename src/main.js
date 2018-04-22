@@ -62,29 +62,30 @@ function main() {
     function extractPaths(pageItem) {
       switch (pageItem.typename) {
         case 'PathItem':
-          if (!pageItem.locked && !pageItem.closed) {
-            // 非表示のパスを保存
-            if (pageItem.hidden) {
-              hiddenPaths[hiddenPathCount++] = pageItem;
-              break;
-            }
-
-            paths[pathCount] = pageItem;
-            paths[pathCount].isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
-            paths[pathCount].isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
-            if (paths[pathCount].isAnchorStart) edgeAnchorCount++;
-            if (paths[pathCount].isAnchorEnd) edgeAnchorCount++;
-
-            // [left, top, right, bottom] スクリプトでは下方向がマイナス
-            var bounds = pageItem.geometricBounds;
-            if (activeBounds[0] > bounds[0]) activeBounds[0] = bounds[0];
-            if (activeBounds[1] < bounds[1]) activeBounds[1] = bounds[1];
-            if (activeBounds[2] < bounds[2]) activeBounds[2] = bounds[2];
-            if (activeBounds[3] > bounds[3]) activeBounds[3] = bounds[3];
-
-            isSkipPaths[pathCount] = false;
-            pathCount++;
+          if (pageItem.locked)
+            break;
+          if (pageItem.hidden) {
+            hiddenPaths[hiddenPathCount++] = pageItem;
+            break;
           }
+          if (pageItem.closed)
+            break;
+
+          paths[pathCount] = pageItem;
+          paths[pathCount].isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
+          paths[pathCount].isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
+          if (paths[pathCount].isAnchorStart) edgeAnchorCount++;
+          if (paths[pathCount].isAnchorEnd) edgeAnchorCount++;
+
+          // [left, top, right, bottom] スクリプトでは下方向がマイナス
+          var bounds = pageItem.geometricBounds;
+          if (activeBounds[0] > bounds[0]) activeBounds[0] = bounds[0];
+          if (activeBounds[1] < bounds[1]) activeBounds[1] = bounds[1];
+          if (activeBounds[2] < bounds[2]) activeBounds[2] = bounds[2];
+          if (activeBounds[3] > bounds[3]) activeBounds[3] = bounds[3];
+
+          isSkipPaths[pathCount] = false;
+          pathCount++;
           break;
         case 'GroupItem':
           iter2extractPaths(pageItem.pathItems);
