@@ -279,6 +279,7 @@ function main() {
     }
     catch (e) {
       alert(e, 'Error', true);
+      winCloseFlg = true;
     }
     finally {
       if (winCloseFlg) {
