@@ -1,8 +1,10 @@
-var pathObj = [];
+var paths = [];
 var pathCount = 0;
+var hiddenPaths = [];
+var hiddenPathCount = 0;
 var joinCount = 0;
 var closePathCount = 0;
-var skipPathArr = [];
+var isSkipPaths = [];
 var connectDistanceSquare;
 var isRemoveHandleData;
 var isConnectMiddle;
@@ -21,6 +23,7 @@ var PI = Math.PI;
 
 function main() {
   var win;
+  var winCloseFlg = false;
   var activeSelection;
   var activeBounds;
   var edgeAnchorCount = 0;
@@ -59,12 +62,18 @@ function main() {
     function extractPaths(pageItem) {
       switch (pageItem.typename) {
         case 'PathItem':
-          if (!pageItem.hidden && !pageItem.locked && !pageItem.closed) {
-            pathObj[pathCount] = pageItem;
-            pathObj[pathCount].isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
-            pathObj[pathCount].isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
-            if (pathObj[pathCount].isAnchorStart) edgeAnchorCount++;
-            if (pathObj[pathCount].isAnchorEnd) edgeAnchorCount++;
+          if (!pageItem.locked && !pageItem.closed) {
+            // 非表示のパスを保存
+            if (pageItem.hidden) {
+              hiddenPaths[hiddenPathCount++] = pageItem;
+              break;
+            }
+
+            paths[pathCount] = pageItem;
+            paths[pathCount].isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
+            paths[pathCount].isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
+            if (paths[pathCount].isAnchorStart) edgeAnchorCount++;
+            if (paths[pathCount].isAnchorEnd) edgeAnchorCount++;
 
             // [left, top, right, bottom] スクリプトでは下方向がマイナス
             var bounds = pageItem.geometricBounds;
@@ -73,7 +82,7 @@ function main() {
             if (activeBounds[2] < bounds[2]) activeBounds[2] = bounds[2];
             if (activeBounds[3] > bounds[3]) activeBounds[3] = bounds[3];
 
-            skipPathArr[pathCount] = false;
+            isSkipPaths[pathCount] = false;
             pathCount++;
           }
           break;
@@ -107,7 +116,7 @@ function main() {
 
       //----------------------
       // 選択オブジェクトからオープンパスを取得
-      if (pathObj.length === 0) {
+      if (paths.length === 0) {
         updateWindow('パス取得中…');
         activeBounds = activeSelection[0].geometricBounds;
         iter2extractPaths(activeSelection);
@@ -225,7 +234,7 @@ function main() {
         if (pathCount > 20)
           level = floor(pathCount / 800) + 3;  // 適当
         LinearQuadtreePartition.init(activeBounds, level, settings.connectDistance);
-        LinearQuadtreePartition.regist(pathObj);
+        LinearQuadtreePartition.regist(paths);
         updateWindow('他のパスとの連結中…');
         LinearQuadtreePartition.start();
       }
@@ -235,10 +244,23 @@ function main() {
       if (settings.rbMerge !== RB_MERGE.OTHER) {
         updateWindow('同じパスの両端を連結中…');
         for (var i = 0; i < pathCount; i++) {
-          if (skipPathArr[i])
+          if (isSkipPaths[i])
             continue;
-          mightClosePath(pathObj[i]);
+          mightClosePath(paths[i]);
         }
+      }
+
+      //----------------------
+      // 一つでも連結できていればスクリプトを終了させる
+      if (joinCount !== 0 || closePathCount !== 0)
+        winCloseFlg = true;
+
+      //----------------------
+      // 非表示のパスを削除
+      if (winCloseFlg && settings.removeHidden) {
+        updateWindow('非表示のパスを削除中…');
+        for (var j = 0; j < hiddenPathCount; j++)
+          hiddenPaths[j].remove();
       }
 
       //----------------------
@@ -249,12 +271,14 @@ function main() {
         '連結数',
         'クローズ数',
         '対象オープンパス数',
+        '非表示のパス数',
         '処理時間(ms)',
       ].join('\n');
       var messageRight = [
         joinCount,
         closePathCount,
         pathCount,
+        hiddenPathCount,
         resultTime,
       ].join('\n');
 
@@ -262,7 +286,7 @@ function main() {
       var messageGroup = winResult.add('group');
       messageGroup.spacing = 6;
       messageGroup.add('statictext', undefined, messageLeft, {multiline: true});
-      messageGroup.add('statictext', undefined, ':\n:\n:\n:', {multiline: true});
+      messageGroup.add('statictext', undefined, ':\n:\n:\n:\n:', {multiline: true});
       messageGroup.add('statictext', undefined, messageRight, {multiline: true});
       winResult.buttonOK = winResult.add('button', [0, 0, 142, 28], 'OK');
       winResult.buttonOK.onClick = function() {
@@ -273,9 +297,10 @@ function main() {
     }
     catch (e) {
       alert(e, 'Error', true);
+      winCloseFlg = true;
     }
     finally {
-      if (joinCount !== 0 || closePathCount !== 0) {
+      if (winCloseFlg) {
         win.close();
         $.writeln('---- End script ----');
       }

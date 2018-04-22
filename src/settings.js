@@ -27,4 +27,5 @@ var defaultSettings = {
     // _pixelAligned     : {type: 'checkbox', value: false, title: 'ピクセルグリッドに整合', group: 'group4', name: 'attr'},
   }},
   keepHandleData  : {type: 'checkbox', value: true, title: 'ハンドル情報を保持', helpTip: '連結点のハンドル情報を保持する\n※中間位置で連結しない時は2点の間にあるハンドルに対して'},
+  removeHidden    : {type: 'checkbox', value: true, title: '非表示のパスを削除', helpTip: '選択したパスのうち非表示のものを連結後に削除する'},
 };

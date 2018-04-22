@@ -50,18 +50,18 @@ function mightClosePath(path) {
 }
 
 // 2点を比較し条件を満たしたらBをAで上書きする
-// arg: {index: pathObjのインデックス, isStart: 始点か終点か}
+// arg: {index: pathsのインデックス, isStart: 始点か終点か}
 // 連結した場合trueを返す
 function mergeAnchor(objA, objB) {
   var iA = objA.index;
   var iB = objB.index;
   if (iA === iB)
     return false;
-  if (skipPathArr[iA] || skipPathArr[iB])
+  if (isSkipPaths[iA] || isSkipPaths[iB])
     return false;
 
-  var pathA = pathObj[iA];
-  var pathB = pathObj[iB];
+  var pathA = paths[iA];
+  var pathB = paths[iB];
 
   //----------------------
   // 連結する条件を満たしているかチェック
@@ -177,7 +177,7 @@ function mergeAnchor(objA, objB) {
     pathB.remove();
 
     // 削除したパスを登録
-    skipPathArr[iB] = true;
+    isSkipPaths[iB] = true;
 
     joinCount++;
 
