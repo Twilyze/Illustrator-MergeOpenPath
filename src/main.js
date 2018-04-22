@@ -105,9 +105,9 @@ function main() {
       var startTime = new Date().getTime();
       var settings = {};
       var RB_MERGE = {
-        OTHER : 0,  // 他のパスとの連結
-        CLOSE : 1,  // 同じパスの両端を連結
-        BOTH  : 2,  // 両方
+        BOTH  : 0,  // 両方
+        OTHER : 1,  // 他のパスとの連結
+        CLOSE : 2,  // 同じパスの両端を連結
       };
       var RB_CONNECT = {
         MIDDLE : 0,  // 2点を中間位置に移動
@@ -229,7 +229,7 @@ function main() {
 
       //----------------------
       // 他のパスとの連結処理
-      if (settings.rbMerge !== RB_MERGE.CLOSE) {
+      if (settings.rbMerge === RB_MERGE.BOTH || settings.rbMerge === RB_MERGE.OTHER) {
         updateWindow('4分木登録中…');
         var level = 0;
         if (pathCount > 20)
@@ -242,7 +242,7 @@ function main() {
 
       //----------------------
       // パスのクローズ処理
-      if (settings.rbMerge !== RB_MERGE.OTHER) {
+      if (settings.rbMerge === RB_MERGE.BOTH || settings.rbMerge === RB_MERGE.CLOSE) {
         updateWindow('同じパスの両端を連結中…');
         for (var i = 0; i < pathCount; i++) {
           if (isSkipPaths[i])
@@ -253,7 +253,7 @@ function main() {
 
       //----------------------
       // 一つでも連結できていればスクリプトを終了させる
-      if (joinCount !== 0 || closePathCount !== 0)
+      if (joinCount > 0 || closePathCount > 0)
         winCloseFlg = true;
 
       //----------------------
