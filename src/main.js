@@ -1,8 +1,8 @@
-var pathObj = [];
+var paths = [];
 var pathCount = 0;
 var joinCount = 0;
 var closePathCount = 0;
-var skipPathArr = [];
+var isSkipPaths = [];
 var connectDistanceSquare;
 var isRemoveHandleData;
 var isConnectMiddle;
@@ -21,6 +21,7 @@ var PI = Math.PI;
 
 function main() {
   var win;
+  var winCloseFlg = false;
   var activeSelection;
   var activeBounds;
   var edgeAnchorCount = 0;
@@ -73,7 +74,7 @@ function main() {
             if (activeBounds[2] < bounds[2]) activeBounds[2] = bounds[2];
             if (activeBounds[3] > bounds[3]) activeBounds[3] = bounds[3];
 
-            skipPathArr[pathCount] = false;
+            isSkipPaths[pathCount] = false;
             pathCount++;
           }
           break;
@@ -107,7 +108,7 @@ function main() {
 
       //----------------------
       // 選択オブジェクトからオープンパスを取得
-      if (pathObj.length === 0) {
+      if (paths.length === 0) {
         updateWindow('パス取得中…');
         activeBounds = activeSelection[0].geometricBounds;
         iter2extractPaths(activeSelection);
@@ -225,7 +226,7 @@ function main() {
         if (pathCount > 20)
           level = floor(pathCount / 800) + 3;  // 適当
         LinearQuadtreePartition.init(activeBounds, level, settings.connectDistance);
-        LinearQuadtreePartition.regist(pathObj);
+        LinearQuadtreePartition.regist(paths);
         updateWindow('他のパスとの連結中…');
         LinearQuadtreePartition.start();
       }
@@ -235,11 +236,16 @@ function main() {
       if (settings.rbMerge !== RB_MERGE.OTHER) {
         updateWindow('同じパスの両端を連結中…');
         for (var i = 0; i < pathCount; i++) {
-          if (skipPathArr[i])
+          if (isSkipPaths[i])
             continue;
-          mightClosePath(pathObj[i]);
+          mightClosePath(paths[i]);
         }
       }
+
+      //----------------------
+      // 一つでも連結できていればスクリプトを終了させる
+      if (joinCount !== 0 || closePathCount !== 0)
+        winCloseFlg = true;
 
       //----------------------
       // 結果を表示
@@ -275,7 +281,7 @@ function main() {
       alert(e, 'Error', true);
     }
     finally {
-      if (joinCount !== 0 || closePathCount !== 0) {
+      if (winCloseFlg) {
         win.close();
         $.writeln('---- End script ----');
       }

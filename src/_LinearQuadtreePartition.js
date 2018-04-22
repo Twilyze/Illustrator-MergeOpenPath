@@ -157,14 +157,14 @@ var LinearQuadtreePartition = new function() {
     },
     // パスの端にあるアンカーの情報を線形四分木に登録する
     // アンカーの位置に連結距離を足した範囲からモートン番号を計算し、適切なセルに割り当てる。
-    regist : function(pathObj) {
+    regist : function(paths) {
       $.writeln('-regist()-');
       var i, j, k;
       var node, nodeIndex, pos, path;
       var x, y, leftTopMorton, rightBottomMorton, xorMorton, hiLevel, check, cellNumber;
-      for (i = 0, len = pathObj.length; i < len; i++) {
+      for (i = 0, len = paths.length; i < len; i++) {
         node = [], nodeIndex = [], pos = [];
-        path = pathObj[i];
+        path = paths[i];
         node[0] = {index: i, isStart: true};
         node[1] = {index: i, isStart: false};
         pos[0] = path.pathPoints[0].anchor;
