@@ -68,83 +68,83 @@ function mergeAnchor(objA, objB) {
 
   //----------------------
   // 連結する条件を満たしているかチェック
+
   // 指定したプロパティが一致していなければreturn
   if (unequalProperty(pathA, pathB))
     return false;
 
   // 選択・角度・距離のチェック
-  var joinFlg = (function() {   // eslint-disable-line consistent-return
-    var pathAStart, pathAEnd, pathBStart, pathBEnd;
-    var a = objA.isStart ? 0x01 : 0;
-    var b = objB.isStart ? 0x10 : 0;
-    switch (a | b) {
-      case 0x10:
-        if (pathA.isAnchorEnd && pathB.isAnchorStart) {
-          pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
-          pathBStart = pathB.pathPoints[0].anchor;
-          if (isNearDistance(pathAEnd, pathBStart)) {
-            if (isReverseAngle) {
-              pathAStart = pathA.pathPoints[0].anchor;
-              pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
-              if (!isReverseAngle(pathAEnd, pathAStart, pathBStart, pathBEnd))
-                return false;
-            }
-            return true;
+  var joinFlg = false;
+  var pathAStart, pathAEnd, pathBStart, pathBEnd;
+  var a = objA.isStart ? 0x01 : 0;
+  var b = objB.isStart ? 0x10 : 0;
+  switch (a | b) {
+    case 0x10:
+      if (pathA.isAnchorEnd && pathB.isAnchorStart) {
+        pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
+        pathBStart = pathB.pathPoints[0].anchor;
+        if (isNearDistance(pathAEnd, pathBStart)) {
+          if (isReverseAngle) {
+            pathAStart = pathA.pathPoints[0].anchor;
+            pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
+            if (!isReverseAngle(pathAEnd, pathAStart, pathBStart, pathBEnd))
+              break;
           }
+          joinFlg = true;
         }
-        return false;
-      case 0x11:
-        if (pathA.isAnchorStart && pathB.isAnchorStart) {
-          pathAStart = pathA.pathPoints[0].anchor;
-          pathBStart = pathB.pathPoints[0].anchor;
-          if (isNearDistance(pathAStart, pathBStart)) {
-            if (isReverseAngle) {
-              pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
-              pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
-              if (!isReverseAngle(pathAStart, pathAEnd, pathBStart, pathBEnd))
-                return false;
-            }
-            reversePolarity(pathA);
-            return true;
+      }
+      break;
+    case 0x11:
+      if (pathA.isAnchorStart && pathB.isAnchorStart) {
+        pathAStart = pathA.pathPoints[0].anchor;
+        pathBStart = pathB.pathPoints[0].anchor;
+        if (isNearDistance(pathAStart, pathBStart)) {
+          if (isReverseAngle) {
+            pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
+            pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
+            if (!isReverseAngle(pathAStart, pathAEnd, pathBStart, pathBEnd))
+              break;
           }
+          reversePolarity(pathA);
+          joinFlg = true;
         }
-        return false;
-      case 0x00:
-        if (pathA.isAnchorEnd && pathB.isAnchorEnd) {
-          pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
-          pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
-          if (isNearDistance(pathAEnd, pathBEnd)) {
-            if (isReverseAngle) {
-              pathAStart = pathA.pathPoints[0].anchor;
-              pathBStart = pathB.pathPoints[0].anchor;
-              if (!isReverseAngle(pathAEnd, pathAStart, pathBEnd, pathBStart))
-                return false;
-            }
-            reversePolarity(pathB);
-            return true;
+      }
+      break;
+    case 0x00:
+      if (pathA.isAnchorEnd && pathB.isAnchorEnd) {
+        pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
+        pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
+        if (isNearDistance(pathAEnd, pathBEnd)) {
+          if (isReverseAngle) {
+            pathAStart = pathA.pathPoints[0].anchor;
+            pathBStart = pathB.pathPoints[0].anchor;
+            if (!isReverseAngle(pathAEnd, pathAStart, pathBEnd, pathBStart))
+              break;
           }
+          reversePolarity(pathB);
+          joinFlg = true;
         }
-        return false;
-      case 0x01:
-        if (pathA.isAnchorStart && pathB.isAnchorEnd) {
-          pathAStart = pathA.pathPoints[0].anchor;
-          pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
-          if (isNearDistance(pathAStart, pathBEnd)) {
-            if (isReverseAngle) {
-              pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
-              pathBStart = pathB.pathPoints[0].anchor;
-              if (!isReverseAngle(pathAStart, pathAEnd, pathBEnd, pathBStart))
-                return false;
-            }
-            reversePolarity(pathA);
-            reversePolarity(pathB);
-            return true;
+      }
+      break;
+    case 0x01:
+      if (pathA.isAnchorStart && pathB.isAnchorEnd) {
+        pathAStart = pathA.pathPoints[0].anchor;
+        pathBEnd = pathB.pathPoints[pathB.pathPoints.length - 1].anchor;
+        if (isNearDistance(pathAStart, pathBEnd)) {
+          if (isReverseAngle) {
+            pathAEnd = pathA.pathPoints[pathA.pathPoints.length - 1].anchor;
+            pathBStart = pathB.pathPoints[0].anchor;
+            if (!isReverseAngle(pathAStart, pathAEnd, pathBEnd, pathBStart))
+              break;
           }
+          reversePolarity(pathA);
+          reversePolarity(pathB);
+          joinFlg = true;
         }
-        return false;
-      // no default
-    }
-  }());
+      }
+      break;
+    // no default
+  }
 
   //----------------------
   // ２つのパスを繋げる

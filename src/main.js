@@ -72,10 +72,12 @@ function main() {
             break;
 
           paths[pathCount] = pageItem;
-          paths[pathCount].isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
-          paths[pathCount].isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
-          if (paths[pathCount].isAnchorStart) edgeAnchorCount++;
-          if (paths[pathCount].isAnchorEnd) edgeAnchorCount++;
+          var isAnchorStart = pageItem.pathPoints[0].selected === ANCHOR;
+          var isAnchorEnd = pageItem.pathPoints[pageItem.pathPoints.length - 1].selected === ANCHOR;
+          paths[pathCount].isAnchorStart = isAnchorStart;
+          paths[pathCount].isAnchorEnd = isAnchorEnd;
+          if (isAnchorStart) edgeAnchorCount++;
+          if (isAnchorEnd) edgeAnchorCount++;
 
           // [left, top, right, bottom] スクリプトでは下方向がマイナス
           var bounds = pageItem.geometricBounds;

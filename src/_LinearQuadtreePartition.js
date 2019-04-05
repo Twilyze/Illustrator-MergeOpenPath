@@ -96,19 +96,20 @@ var LinearQuadtreePartition = new function() {
         if (mergeAnchor(datA, datB)) {
           // パスを連結（BをAで上書き）したら連結点の反対側の情報を書き換える
           // （pairには反対側の情報が入っている位置が保存されている）
+          var datAPair = _cells[datA.pair[0]][datA.pair[1]];
+          var datBPair = _cells[datB.pair[0]][datB.pair[1]];
 
           // Bの反対側のindexをAに変更
-          _cells[datB.pair[0]][datB.pair[1]].index = datA.index;
+          datBPair.index = datA.index;
           // Bの反対側のpairをAのものに変更
-          _cells[datB.pair[0]][datB.pair[1]].pair = datA.pair;
+          datBPair.pair = datA.pair;
           // Aの反対側のpairをBのものに変更
-          _cells[datA.pair[0]][datA.pair[1]].pair = datB.pair;
+          datAPair.pair = datB.pair;
 
-          // 連結時に必要ならパスの向きを変更するので反対側の情報にも反映させる
           if (datA.isStart)
-            _cells[datA.pair[0]][datA.pair[1]].isStart = true;
+            datAPair.isStart = true;
           if (!datB.isStart)
-            _cells[datB.pair[0]][datB.pair[1]].isStart = false;
+            datBPair.isStart = false;
 
           // 連結点の情報は必要ないので消去（これで_cellsの方も消える）
           objA[a] = null;
