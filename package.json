@@ -1,11 +1,12 @@
 {
   "name": "MergeOpenPath",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Twilyze",
   "license": "MIT",
   "url": "https://github.com/twilyze/Illustrator-MergeOpenPath",
   "scripts": {
     "gulp": "gulp",
+    "build": "gulp build",
     "dev": "gulp watch",
     "postinstall": "gulp build"
   },
@@ -15,15 +16,15 @@
     "gulp-concat": "2.6.1",
     "gulp-cr-lf-replace": "0.0.4",
     "gulp-eslint": "4.0.2",
-    "gulp-footer": "2.0.1",
-    "gulp-header": "2.0.5",
+    "gulp-footer": "2.0.2",
+    "gulp-header": "2.0.7",
     "gulp-if": "2.0.2",
     "gulp-load-plugins": "1.5.0",
     "gulp-notify": "3.2.0",
-    "gulp-plumber": "1.2.0",
-    "gulp-rename": "1.2.2",
-    "gulp-replace": "0.6.1",
-    "gulp-uglify": "3.0.0",
+    "gulp-plumber": "1.2.1",
+    "gulp-rename": "1.4.0",
+    "gulp-replace": "1.0.0",
+    "gulp-uglify": "3.0.2",
     "uglify-es": "3.3.9"
   }
 }
