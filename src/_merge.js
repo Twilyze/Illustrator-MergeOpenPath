@@ -8,6 +8,9 @@ function setPoint(pathPoint, pos) {
 
 // パスの向きを反転させる
 function reversePolarity(path) {
+  var tmpSelected = path.isAnchorEnd;
+  path.isAnchorEnd = path.isAnchorStart;
+  path.isAnchorStart = tmpSelected;
   if (path.polarity === POSITIVE)
     path.polarity = NEGATIVE;
   else
