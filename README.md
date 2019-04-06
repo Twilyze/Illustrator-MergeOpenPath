@@ -3,7 +3,7 @@ MergeOpenPath.jsx
 
 パスの端にある近接点を連結するIllustratorスクリプト
 
-![banner](https://github.com/twilyze/Illustrator-MergeOpenPath/blob/master/image/banner.png)
+![banner](/image/banner.png)
 
 
 ## 主な機能
@@ -35,7 +35,7 @@ __念のためスクリプトを使用する前にファイルを保存してく
 
 
 ## 設定
-![main_window](https://github.com/twilyze/Illustrator-MergeOpenPath/blob/master/image/main_window.png)
+![main_window](/image/main_window.png)
 
 
 ### これ以下の距離なら連結する
@@ -66,7 +66,7 @@ __念のためスクリプトを使用する前にファイルを保存してく
   - ※角度はパスの端とその隣にあるアンカーの位置から求める
   - 許容量に５を設定した場合、反転した角度から+/-５度分のパスも含めます
 
-![v_h](https://github.com/twilyze/Illustrator-MergeOpenPath/blob/master/image/v_h.png)
+![v_h](/image/v_h.png)
 
 
 ### プロパティが一致するパスに絞る
@@ -90,7 +90,7 @@ __念のためスクリプトを使用する前にファイルを保存してく
   - 保持しない  
     `[オブジェクト]-[パス]-[連結]`と同じ動作
 
-![handle](https://github.com/twilyze/Illustrator-MergeOpenPath/blob/master/image/handle.png)
+![handle](/image/handle.png)
 
 
 ### 非表示のパスを削除
@@ -124,9 +124,9 @@ __※アピアランスを分割する際、ロックされたガイドがレイ
 
 
 ### 16分割の鏡面編集
-![example_16](https://github.com/twilyze/Illustrator-MergeOpenPath/blob/master/image/example_16.png)
+![example_16](/image/example_16.png)
 
-[example_16.ai](https://github.com/Twilyze/Illustrator-MergeOpenPath/releases/download/v1.0.0/example_16.ai)
+[example_16.ai](https://github.com/Twilyze/Illustrator-MergeOpenPath/releases/download/v1.0.1/example_16.ai)
 
 360° ÷ 16 = 22.5°
 
@@ -163,4 +163,4 @@ Adobe Illustrator CS5.1 (Windows10 64bit)
 
 
 ## ライセンス
-[MIT](https://github.com/twilyze/Illustrator-MergeOpenPath/blob/master/LICENSE)
+[MIT](/LICENSE)
