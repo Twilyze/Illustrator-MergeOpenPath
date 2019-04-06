@@ -17,7 +17,9 @@ const SOURCE_PATH = [
   'src/main.js',
 ];
 const OUTPUT_NAME = pkg.name;
-const COPY_FILE = ['LICENSE', 'README.md'];
+const COPY_FILE = ['README.md', 'LICENSE'];
+const REPLACE_README_REGEX = /(?<=\]\()\//g;
+const REPLACE_README_TEXT = pkg.url + '/tree/v' + pkg.version + '/';
 const DEST_PATH = 'dist';
 const TEMP_PATH = process.env.TEMP;
 const ESLINT_RC = 'compile.eslintrc';
@@ -111,6 +113,9 @@ gulp.task('clean', () => {
 });
 gulp.task('copy', () => {
   return gulp.src(COPY_FILE)
+    .pipe($.if(file => {
+      return file.path.indexOf(COPY_FILE[0]) !== -1;
+    }, $.replace(REPLACE_README_REGEX, REPLACE_README_TEXT)))
     .pipe(crLfReplace({changeCode: 'CR+LF'}))
     .pipe($.rename({extname: '.txt'}))
     .pipe(gulp.dest(DEST_PATH));
